@@ -18,5 +18,5 @@ def get_data():
         data = c.fetchall()
     return data
 
-@app.route('/chart')
-def chart():
+if __name__ == '__main__':
+    app.run(debug=True)
