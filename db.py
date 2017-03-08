@@ -1,18 +1,18 @@
 import sqlite3
 
 def drop_table():
-    with sqlite3.connect(db) as connection:
+    with sqlite3.connect('bitcoin.db') as connection:
         c = connection.cursor()
-        c.execute()'DROP TABLE if EXISTS currency;')
+        c.execute('DROP TABLE if EXISTS currency;')
     return True
 
 def create_db():
     with sqlite3.connect('bitcoin.db') as connection:
         c = connection.cursor()
         c.execute("""CREATE TABLE currency (
-                    currency text,
+                    exchange text,
                     price Real,
-                    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                    hora Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 );""")
     return True
 
