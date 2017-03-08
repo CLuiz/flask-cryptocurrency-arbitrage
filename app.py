@@ -11,6 +11,8 @@ app = Flask(__name__)
 def index():
     return 'Hello World!'
 
+port = int(os.environ.get('PORT', 5000)
+
 # # add data from the db
 # def get_data():
 #     with sqlite3.connect('currency.db') as connection:
@@ -20,4 +22,4 @@ def index():
 #     return data
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.environ.get('PORT', 5000)))
+    app.run(host='0.0.0.0', port=port)
