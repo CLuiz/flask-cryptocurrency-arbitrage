@@ -1,25 +1,32 @@
-from flask import Flask
-# from bokeh.plotting import figure
-# from bokeh.embed import components
-# from bokeh.resources import INLINE
-# import sqlite3
-import os
+#import os
+import sqlite3
+from flask import Flask, jsonify
+
 
 app = Flask(__name__)
+
 
 @app.route('/')
 def index():
     return 'Hello World!'
 
-port = int(os.environ.get('PORT', 5000)
+#port = int(os.environ.get('PORT', 5000)
 
-# # add data from the db
-# def get_data():
-#     with sqlite3.connect('currency.db') as connection:
-#         c =  connection.cursor()
-#         c.execute('SELECT * FROM currency')
-#         data = c.fetchall()
-#     return data
+# add data from the db
+@app.route('/data')
+def get_data():
+    data_lst = []
+    with sqlite3.connect('bitcoin.db') as connection:
+        c =  connection.cursor()
+        c.execute('SELECT * FROM currency')
+        data = c.fetchall()
+        for value in data:
+            data_lst.append({
+            'exchange': value[0],
+            'price': value[1],
+            'time': value[1]
+            })
+        return jsonify(data_lst)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=port)
+    app.run(port=8080)
