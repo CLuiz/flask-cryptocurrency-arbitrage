@@ -5,9 +5,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 BASE = os.path.abspath(os.path.dirname(__file__))
 DATABASE_PATH = os.path.join(BASE, 'test.db')
+DATABSE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + DATABASE_PATH)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_PATH
+#local solution
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_PATH
+#updated for heroku deployment
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 db = SQLAlchemy(app)
 
 import models
@@ -16,7 +20,6 @@ import models
 def index():
     return 'Hello World!'
 
-#port = int(os.environ.get('PORT', 5000)
 
 # add data from the db
 @app.route('/data')
@@ -42,5 +45,9 @@ def get_data():
         data_lst.append(obj)
     return jsonify(data_lst)
 
+
+port = int(os.environ.get('PORT', 8080)
+
+
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(host='0.0.0.0', port=port)
