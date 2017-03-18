@@ -22,17 +22,25 @@ def index():
 @app.route('/data')
 def get_data():
     data_lst = []
-    with sqlite3.connect('bitcoin.db') as connection:
-        c =  connection.cursor()
-        c.execute('SELECT * FROM currency')
-        data = c.fetchall()
-        for value in data:
-            data_lst.append({
-            'exchange': value[0],
-            'price': value[1],
-            'time': value[1]
-            })
-        return jsonify(data_lst)
+    # with sqlite3.connect('bitcoin.db') as connection:
+    #     c =  connection.cursor()
+    #     c.execute('SELECT * FROM currency')
+    #     data = c.fetchall()
+    #     for value in data:
+    #         data_lst.append({
+    #         'exchange': value[0],
+    #         'price': value[1],
+    #         'time': value[1]
+    #         })
+    query = models.Currency.query.all()
+    for row in query:
+        obj = {
+            'exchange': row.exchange,
+            'price': row.price,
+            'time': row.hora
+        }
+        data_lst.append(obj)
+    return jsonify(data_lst)
 
 if __name__ == '__main__':
     app.run(port=8080)
