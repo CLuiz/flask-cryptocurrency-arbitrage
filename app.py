@@ -1,9 +1,9 @@
-#import os
-import sqlite3
+import os
+#import sqlite3
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-BASE = os.pathabspath(os.path.dirname(__file__))
+BASE = os.path.abspath(os.path.dirname(__file__))
 DATABASE_PATH = os.path.join(BASE, 'test.db')
 
 app = Flask(__name__)

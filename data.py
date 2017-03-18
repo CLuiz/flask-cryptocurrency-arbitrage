@@ -1,8 +1,10 @@
+import requests
 from app import db
 from models import Currency
+
 # imports required for sqlite implementation found below
 #import sqlite3
-#import requests
+
 
 
 def get_data():

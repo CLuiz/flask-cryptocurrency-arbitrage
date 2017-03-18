@@ -2,7 +2,7 @@ from datetime import datetime
 
 from app import db
 
-class Currency(db.model):
+class Currency(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     exchange =db.Column(db.String())
     price = db.Column(db.String())
