@@ -1,10 +1,16 @@
 #import os
 import sqlite3
 from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
 
+BASE = os.pathabspath(os.path.dirname(__file__))
+DATABASE_PATH = os.path.join(BASE, 'test.db')
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_PATH
+db = SQLAlchemy(app)
 
+import models
 
 @app.route('/')
 def index():
