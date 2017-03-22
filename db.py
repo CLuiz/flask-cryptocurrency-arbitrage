@@ -14,7 +14,7 @@ def create_db():
         c.execute("""CREATE TABLE currency (
                     exchange text,
                     price Real,
-                    hora Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                    hora DATETIME DEFAULT CURRENT_TIMESTAMP
                 );""")
     return True
 

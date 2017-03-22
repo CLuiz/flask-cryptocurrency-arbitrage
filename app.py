@@ -1,40 +1,30 @@
 import os
-#import sqlite3
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
+from bokeh.plotting import figure
+from bokeh.embed import components
+from bokeh.resources import INLINE
+import bokeh.palettes
+from collections import defaultdict
+import models
 
 BASE = os.path.abspath(os.path.dirname(__file__))
 DATABASE_PATH = os.path.join(BASE, 'test.db')
 DATABSE_URI = os.getenv('DATABASE_URL', 'sqlite:///' + DATABASE_PATH)
 
 app = Flask(__name__)
-#local solution
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_PATH
-#updated for heroku deployment
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABSE_URI
 db = SQLAlchemy(app)
 
-import models
 
 @app.route('/')
 def index():
-    return 'Hello World!'
+    return 'Hello, world'
 
 
-# add data from the db
 @app.route('/data')
-def get_data():
-    data_lst = []
-    # with sqlite3.connect('bitcoin.db') as connection:
-    #     c =  connection.cursor()
-    #     c.execute('SELECT * FROM currency')
-    #     data = c.fetchall()
-    #     for value in data:
-    #         data_lst.append({
-    #         'exchange': value[0],
-    #         'price': value[1],
-    #         'time': value[1]
-    #         })
+def data():
+    all_data = []
     query = models.Currency.query.all()
     for row in query:
         obj = {
@@ -42,12 +32,47 @@ def get_data():
             'price': row.price,
             'time': row.hora
         }
-        data_lst.append(obj)
-    return jsonify(data_lst)
+        all_data.append(obj)
+    return jsonify(all_data)
 
+@app.route('/chart')
+def chart():
+    all_data = defaultdict(list)
+    query = models.Currency.query.all()
+    p = figure(
+        width=1080,
+        height=600,
+        x_axis_type="datetime",
+    )
 
-port = int(os.environ.get('PORT', 8080)
+    for row in query:
+        all_data[row.exchange].append((row.hora, row.price))
+
+    # create a new plot with a title and axis labels
+    p = figure(title="bitcoin exchanges",
+     x_axis_label='time',
+     y_axis_label='price',
+     x_axis_type='datetime' )
+
+    for i, (exchange, points) in enumerate(all_data.items()):
+        color = bokeh.palettes.Category20[20][i]
+        X,Y = zip(*sorted(points))
+        p.line(X,Y, line_width=2, alpha=0.7, legend=exchange, color=color)
+
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+    script, div = components(p)
+
+    return render_template(
+        'index.html',
+        js_resources = js_resources,
+        css_resources = css_resources,
+        plot_script = script,
+        plot_div = div,
+    )
+
+port = int(os.environ.get('PORT', 8080))
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)

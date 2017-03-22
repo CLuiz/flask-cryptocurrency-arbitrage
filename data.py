@@ -6,8 +6,8 @@ from models import Currency
 #import sqlite3
 
 
-
 def get_data():
+    results = {}
     r = requests.get('https://www.bitstamp.net/api/v2/ticker/btcusd/')
     return r.json()
 
@@ -19,12 +19,29 @@ def get_data():
 #         c.execute('INSERT INTO currency (exchange, price) VALUES(?, ?)', values)
 #     return True
 
+def get_rates():
+    results = {}
+    try:
+        bitstamp = requests.get(
+            'https://www.bitstamp.net/api/v2/ticker/btcusd/')
+        results['bitstamp'] = float(bitstamp.json()['bid'])
+        kraken = requests.get(
+            'https://api.kraken.com/0/public/Ticker?pair=XBTUSD')
+        results['kraken'] = float(kraken.json()['result']['XXBTZUSD']['a'][0])
+        bittrex = requests.get(
+            'https://bittrex.com/api/v1.1/public/getticker?market=usdt-btc')
+        results['bittrex'] = bittrex.json()['result']['Bid']
+        return results
+    except:
+        return False
+
 def add_data(bitcoin_dict):
-    new_entry = Currency('bitstamp', bitcoin_dict['last'], None)
-    db.session.add(new_entry)
-    db.session.commit()
+    for key, value in bitcoint_dict.items():
+        new_entry = Currency(key, value, None)
+        db.session.add(new_entry)
+        db.session.commit()
     return True
 
-if __name__ =='__main__':
+if __name__ == '__main__':
     data = get_data()
     add_data(data)
