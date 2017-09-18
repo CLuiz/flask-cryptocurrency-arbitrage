@@ -35,6 +35,7 @@ def data():
         all_data.append(obj)
     return jsonify(all_data)
 
+
 @app.route('/chart')
 def chart():
     all_data = defaultdict(list)
